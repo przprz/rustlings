@@ -1,7 +1,8 @@
 // iterators4.rs
 // Execute `rustlings hint iterators4` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+
+use std::ops::Range;
 
 pub fn factorial(num: u64) -> u64 {
     // Complete this function to return the factorial of num
@@ -13,6 +14,25 @@ pub fn factorial(num: u64) -> u64 {
     // For an extra challenge, don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+    if num == 0 {
+        1
+    } else {
+        // alt1:
+        // num * factorial(num - 1)
+
+        // alt2:
+        // let mut result = num;
+        // let mut num1 = num;
+        // while num1 > 1 {
+        //    result = result* (num1 -1);
+        //     num1 -= 1;
+        // }
+        // result
+
+        // alt3:
+        (2..=num)
+            .fold(1, |acc, n| acc * n)
+    }
 }
 
 #[cfg(test)]
@@ -28,6 +48,7 @@ mod tests {
     fn factorial_of_1() {
         assert_eq!(1, factorial(1));
     }
+
     #[test]
     fn factorial_of_2() {
         assert_eq!(2, factorial(2));

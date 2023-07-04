@@ -8,7 +8,6 @@
 // need to be modified.
 // Execute `rustlings hint iterators5` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -19,9 +18,9 @@ enum Progress {
     Complete,
 }
 
-fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
+fn imperative_count(project_progress: &HashMap<String, Progress>, value: Progress) -> usize {
     let mut count = 0;
-    for val in map.values() {
+    for val in project_progress.values() {
         if val == &value {
             count += 1;
         }
@@ -29,16 +28,18 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
     count
 }
 
-fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
-    // map is a hashmap with String keys and Progress values.
+fn functional_count(project_progress: &HashMap<String, Progress>, value: Progress) -> usize {
     // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
+   project_progress
+       .values()
+       .filter(|&p| p == &value)
+       .count()
 }
 
-fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
+fn imperative_count_collection(group_project_progress: &[HashMap<String, Progress>], value: Progress) -> usize {
     let mut count = 0;
-    for map in collection {
-        for val in map.values() {
+    for project_progress in group_project_progress {
+        for val in project_progress.values() {
             if val == &value {
                 count += 1;
             }
@@ -47,11 +48,14 @@ fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progres
     count
 }
 
-fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
-    // collection is a slice of hashmaps.
+fn functional_count_collection(group_project_progress: &[HashMap<String, Progress>], value: Progress) -> usize {
     // collection = [{ "variables1": Complete, "from_str": None, ... },
     //     { "variables2": Complete, ... }, ... ]
-    todo!();
+group_project_progress
+    .iter()
+    .map(|project_progress| functional_count(&project_progress, value))
+    .sum()
+
 }
 
 #[cfg(test)]
@@ -61,19 +65,19 @@ mod tests {
     #[test]
     fn count_complete() {
         let map = get_map();
-        assert_eq!(3, count_iterator(&map, Progress::Complete));
+        assert_eq!(3, functional_count(&map, Progress::Complete));
     }
 
     #[test]
     fn count_some() {
         let map = get_map();
-        assert_eq!(1, count_iterator(&map, Progress::Some));
+        assert_eq!(1, functional_count(&map, Progress::Some));
     }
 
     #[test]
     fn count_none() {
         let map = get_map();
-        assert_eq!(2, count_iterator(&map, Progress::None));
+        assert_eq!(2, functional_count(&map, Progress::None));
     }
 
     #[test]
@@ -82,8 +86,8 @@ mod tests {
         let progress_states = vec![Progress::Complete, Progress::Some, Progress::None];
         for progress_state in progress_states {
             assert_eq!(
-                count_for(&map, progress_state),
-                count_iterator(&map, progress_state)
+                imperative_count(&map, progress_state),
+                functional_count(&map, progress_state)
             );
         }
     }
@@ -93,20 +97,20 @@ mod tests {
         let collection = get_vec_map();
         assert_eq!(
             6,
-            count_collection_iterator(&collection, Progress::Complete)
+            functional_count_collection(&collection, Progress::Complete)
         );
     }
 
     #[test]
     fn count_collection_some() {
         let collection = get_vec_map();
-        assert_eq!(1, count_collection_iterator(&collection, Progress::Some));
+        assert_eq!(1, functional_count_collection(&collection, Progress::Some));
     }
 
     #[test]
     fn count_collection_none() {
         let collection = get_vec_map();
-        assert_eq!(4, count_collection_iterator(&collection, Progress::None));
+        assert_eq!(4, functional_count_collection(&collection, Progress::None));
     }
 
     #[test]
@@ -116,8 +120,8 @@ mod tests {
 
         for progress_state in progress_states {
             assert_eq!(
-                count_collection_for(&collection, progress_state),
-                count_collection_iterator(&collection, progress_state)
+                imperative_count_collection(&collection, progress_state),
+                functional_count_collection(&collection, progress_state)
             );
         }
     }
